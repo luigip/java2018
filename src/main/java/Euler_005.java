@@ -32,7 +32,11 @@ What is the smallest positive number that is evenly divisible by all of the numb
     }
 
     long cleverer() {
-        int[] maxFactorCounts = new int[upperLimit+1];
+        // take prime factors of each number, and multiply maximum number of factors in range
+        // e.g. 4 = 2 * 2, 6 = 3 * 2, 8 = 2 * 2 * 2, 10 = 5 * 2
+        // so 2 required a maximum of 3 times in numbers up to 10
+        Map<Long,Long> maxFactorCounts = new HashMap<Long, Long>();
+
         for (int i = 1; i < upperLimit; i++) {
             // get prime factors of i
             List<Long> factors = Primes.primeFactors(i);
@@ -40,24 +44,19 @@ What is the smallest positive number that is evenly divisible by all of the numb
             Map<Long,Long> freqs = factors.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
             // keep track of the maximum number of each prime factor required
             for (Map.Entry<Long,Long> entry: freqs.entrySet()) {
-                int n = entry.getKey().intValue();
-                int count = entry.getValue().intValue();
-                if(maxFactorCounts[n] < entry.getValue()) {
-                    maxFactorCounts[n] = count;
-                }
+                Long n = entry.getKey();
+                Long count = entry.getValue();
+                if(maxFactorCounts.getOrDefault(n,0L) < count)
+                    maxFactorCounts.put(n,count);
             }
         }
-        //System.out.println(Arrays.toString(maxFactorCounts));
+//        System.out.println(maxFactorCounts);
 
-        // get total
-        long total = 1;
-        for(int i = 1; i < maxFactorCounts.length; i++){
-            int number = maxFactorCounts[i];
-            if (number > 0) total = total * ((long)Math.pow(i,number));
-        }
-
+        long total = maxFactorCounts.entrySet().stream()
+                .map(entry -> (long)Math.pow(entry.getKey(), entry.getValue()))
+                .reduce(1L, (acc, x) -> acc * x);
 
         return total;
     }
-    
+
 }
