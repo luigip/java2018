@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -12,15 +13,15 @@ Find the thirteen adjacent digits in the 1000-digit number that have the greates
     int numberOfDigits = 13;
 
     long solve() {
-        URL number = getClass().getResource("Euler_008_data.txt");
+
         String x = "";
-        try (Scanner sc = new Scanner(new File(number.toURI()))){
+        try (FileReader fr = new FileReader("Euler_008_data.txt")){
             StringBuilder sb = new StringBuilder();
             while(sc.hasNext()) {
                 sb.append(sc.nextLine());
             }
             x = sb.toString();
-            //System.out.println(sb.toString());
+            System.out.println(sb.toString());
         }
         catch (Exception e) {e.printStackTrace();}
 
