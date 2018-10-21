@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class Runner {
     public static void main(String[] args) {
 
@@ -13,11 +15,15 @@ public class Runner {
         }
         catch (RuntimeException r) {
             System.out.println("Boom, runtime exception!");
-            System.out.println(r);
+            System.out.println(r.toString().replaceAll("[^a-zA-Z0-9 ]", ""));
+        }
+        catch (IOException e){
+            System.out.println("Boom, IOException!");
+            e.printStackTrace();
         }
         catch (Exception e) {
             System.out.println("Could not load the specified problem: " + problemName);
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 }
