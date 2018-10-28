@@ -1,5 +1,3 @@
-import com.sun.crypto.provider.DESedeKeyGenerator
-
 import scala.collection.mutable
 
 /*Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down,
@@ -22,11 +20,9 @@ class Euler_015 extends Problem {
     }
     case class Node(x: Int, y: Int) extends Intersection {
       val across: Intersection =
-        if (x == 0) Edge
-        else Node(x - 1, y)
+        if (x == 0) Edge else Node(x - 1, y)
       val down: Intersection =
-        if (y == 0) Edge
-        else Node(x, y - 1)
+        if (y == 0) Edge else Node(x, y - 1)
       val ways: Long =
         if (down == Edge && across == Edge) 1 // Endpoint
         else across.ways + down.ways
