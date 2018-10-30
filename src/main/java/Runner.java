@@ -11,6 +11,8 @@ public class Runner {
         String problemName = args[0];
         try {
             Problem problem = (Problem) Class.forName(problemName).getConstructor().newInstance();
+            // Warm-up run - makes timing more valid. Otherwise it can be weirdly long, especially with Scala code
+            long discarded_result = problem.solve();
             long result = timed(problem::solve);
             System.out.println(problemName + ": " + result);
         }
