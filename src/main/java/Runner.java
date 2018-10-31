@@ -19,6 +19,7 @@ public class Runner {
         catch (RuntimeException r) {
             System.out.println("Boom, runtime exception!");
             System.out.println(r.toString().replaceAll("[^a-zA-Z0-9 ]", ""));
+            r.printStackTrace();
         }
         catch (IOException e){
             System.out.println("Boom, IOException!");

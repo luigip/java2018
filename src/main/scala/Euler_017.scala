@@ -20,7 +20,6 @@ class Euler_017 extends Problem {
     .split(" ")).toMap
   private val s20to90 = (20 to 90 by 10).zip("twenty thirty forty fifty sixty seventy eighty ninety"
     .split(" ")).toMap
-
 }
 
 
