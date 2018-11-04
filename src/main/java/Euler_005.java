@@ -35,26 +35,26 @@ What is the smallest positive number that is evenly divisible by all of the numb
         // take prime factors of each number, and multiply maximum number of factors in range
         // e.g. 4 = 2 * 2, 6 = 3 * 2, 8 = 2 * 2 * 2, 10 = 5 * 2
         // so 2 required a maximum of 3 times in numbers up to 10
-        Map<Long,Long> maxFactorCounts = new HashMap<Long, Long>();
+        Map<Integer,Long> maxFactorCounts = new HashMap<>();
 
         for (int i = 1; i < upperLimit; i++) {
             // get prime factors of i
-            List<Long> factors = Primes.primeFactors(i);
+            List<Integer> factors = Primes.primeFactors(i);
             // count the frequencies of each prime factor
-            Map<Long,Long> freqs = factors.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            Map<Integer,Long> freqs = factors.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
             // keep track of the maximum number of each prime factor required
-            for (Map.Entry<Long,Long> entry: freqs.entrySet()) {
-                Long n = entry.getKey();
-                Long count = entry.getValue();
+            for (Map.Entry<Integer,Long> entry: freqs.entrySet()) {
+                Integer n = entry.getKey();
+                long count = entry.getValue();
                 if(maxFactorCounts.getOrDefault(n,0L) < count)
                     maxFactorCounts.put(n,count);
             }
         }
 //        System.out.println(maxFactorCounts);
 
-        long total = maxFactorCounts.entrySet().stream()
-                .map(entry -> (long)Math.pow(entry.getKey(), entry.getValue()))
-                .reduce(1L, (acc, x) -> acc * x);
+        int total = maxFactorCounts.entrySet().stream()
+                .map(entry -> (int)Math.pow(entry.getKey(), entry.getValue()))
+                .reduce(1, (acc, x) -> acc * x);
 
         return total;
     }

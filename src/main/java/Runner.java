@@ -1,7 +1,13 @@
 import java.io.IOException;
 import static fint.Timer.timed;
 public class Runner {
+
+    //* Whether we are doing a performance test. This may take longer since we run it twice.
+    private static boolean checkTime = false;
+
     public static void main(String[] args) {
+        // args: [class name][number of timing runs, e.g. ttt = 3 runs]
+
 
         if (args.length == 0) {
             System.out.println("No problem specified. Class name of problem needs to be passed as an argument.\n" +
@@ -11,9 +17,10 @@ public class Runner {
         String problemName = args[0];
         try {
             Problem problem = (Problem) Class.forName(problemName).getConstructor().newInstance();
-            // Warm-up run - makes timing more valid. Otherwise it can be weirdly long, especially with Scala code
-            long discarded_result = problem.solve();
-            long result = timed(problem::solve);
+            long result;
+            if(checkTime || (args.length >= 2 && args[1].contains("t")))
+                result = timed(problem::solve, args[1].length());
+                else result = problem.solve();
             System.out.println(problemName + ": " + result);
         }
         catch (RuntimeException r) {
@@ -28,6 +35,9 @@ public class Runner {
         catch (Exception e) {
             System.out.println("Could not load the specified problem: " + problemName);
             e.printStackTrace();
+        }
+        finally {
+//            Toolkit.getDefaultToolkit().beep();
         }
     }
 
