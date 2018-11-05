@@ -1,86 +1,65 @@
-import java.util
-import collection.mutable.ArrayBuffer
+/*
+  Strategy:
+  Observe the following:
+    - if d is the product of a subset of the prime factors of n, then n/d is the product of all the rest
+        e.g. if n = a*b*c*d*e, if d = a*b then n/d = c*d*e
+    - all solutions can have max of 1 factor of each prime (since otherwise there exist divisors with
+        a common factor in d and n/d, hence sum divides by that factor and is not prime)
+    - since 1 and n are included in the dividers, when d = 1, d + n/d = n + 1, which is required
+        to be prime
 
+  Hence:
+    - start with list of primes.map(_ - 1)
+    - narrow down candidates to test by eliminating numbers that have more than 1 of the same prime factor
+    - do this by factorization, i.e. dividing by the factors found already
+    - Therefore only check n where n is a prime - 1.
+
+  Or, another optimization: divisors can more quickly be calculated by taking previous n with same prime factors and
+  adding multiples of the new prime factor to the list (doubling the number of divisors). i.e. create a cache of
+  cartesian products
+
+      Full version, max_n = 1e8
+      Time: 11114902000 ns  =  11115 ms
+      Euler_357: 1739023853137
+
+      Short version, max_n = 1e6
+      Time: 1166315670 ns  =  1166 ms
+      Euler_357: 524402305
+  */
 class Euler_357 extends Problem {
+
   private val max_n = 1e8.toInt
-  private val primes: util.BitSet = Primes.primesFromSieve(max_n + 1)
+  private val primes: java.util.BitSet = Primes.primesFromSieve(max_n + 1)    // A Sieve of Eratosthenes
 
   def solve: Long = {
-    /*
-    Strategy:
-    Observe the following:
-      - if d is the product of a subset of the prime factors of n, then n/d is the product of all the rest
-          e.g. if n = a*b*c*d*e, if d = a*b then n/d = c*d*e
-      - all solutions > 1 must contain factor 2 (since they need to add to give a prime, which is odd)
-      - all solutions can have max of 1 factor of each prime (since otherwise there exist divisors with
-        a common factor in d and n/d, hence sum divides by that factor and is not prime)
-      - BIG CLUE: since 1 and n are included in the dividers, when d = 1, d + n/d = n + 1, which is required
-          to be prime. Therefore only check n where n is a prime - 1.
-
-    Hence:
-      - start with primes - 1
-      - narrow down candidates to test by eliminating numbers that have more than 1 of the same prime factor
-      - do this by factorization, i.e. dividing by the factors found already
-
-    Or, another optimization: divisors can more quickly be calculated by taking previous n with same prime factors and
-    adding multiples of the new prime factor to the list (doubling the number of divisors). i.e. create a cache of
-    cartesian products
-    */
-
-    (for {
-      (n, factors) <- candidates(max_n)
+    val solutions = for {
+      n <- Iterator.iterate(1)(n => primes.nextSetBit(n + 2) - 1).takeWhile(n => n > -1 && n <= max_n)
+      factors <- primeFactors(n)
       if isPrimeGenerator(n, cartesianProduct(factors))
-    } yield n.toLong).sum
-
-//    Time: 13440653799 ns  =  13441 ms
-//    Euler_357: 1739023853137
-//    Correct!
-
+    } yield n.toLong
+    solutions.sum
   }
 
-  def candidates(upto: Int): ArrayBuffer[(Int, ArrayBuffer[Int])] = {
-    // This method combines the operations:
-    // 1. Iterating through all possible numbers
-    // 2. Working out prime factors
-    val results = ArrayBuffer[(Int, ArrayBuffer[Int])]()
-    results += (1 ->  ArrayBuffer[Int](1))
-    var n = 2
-    while(n <= upto && n > -1) {
-      //println("n = " + n)
-      primeFactors(n) match {
-        case Some(list) => results += (n -> list)
-        case None =>
+  def primeFactors(remaining: Int, prime: Int = 2, factors: Vector[Int] = Vector.empty): Option[Seq[Int]] = {
+    // primes returns -1 if it has run out of primes
+    // primes above the sqrt(remaining) can't be factors, but we know the remaining is the last prime
+    if (prime * prime <= remaining && prime > -1) remaining % prime match {
+      case 0 => remaining / prime % prime match {         // prime divides, check if it divides again
+        case 0 => None                                    // repeated prime factor, hence invalid
+        case _ => primeFactors(remaining / prime, primes.nextSetBit(prime + 1), factors :+ prime)
       }
-      n = primes.nextSetBit(n + 2) - 1
+      case _ => primeFactors(remaining, primes.nextSetBit(prime + 1), factors)  // does not divide, so try next prime
     }
-    results
+    else Some(factors :+ remaining)
   }
 
-  def primeFactors(n: Int): Option[ArrayBuffer[Int]] = {
-    // takes a pre-screened n and returns Some(factors) unless n has repeated prime factors
-    val factors = ArrayBuffer[Int]()  // storage for prime factors
-    var remaining = n  // what's left after we divide through by the prime
-    var prime = 2
-    // only go up to sqrt of trial, since we know there aren't any smaller factors (we've already
-    // divided them out), hence there cannot be any larger than the sqrt
-    while (prime * prime <= remaining && prime > -1) {
-      if (remaining % prime == 0) { // trial is prime factor of x
-        factors += prime
-        remaining = remaining / prime
-        if (remaining % prime == 0) { /*println(s"$remaining % $prime == 0");*/ return None}
-      }
-      prime = primes.nextSetBit(prime + 1)
-    }
-    factors += remaining
-    Some(factors)
-  }
-  def isPrimeGenerator(n: Int, divisors: List[Int]): Boolean = {
-    // This could be optimized if divisors were in (d, n/d) pairs, since it's the same for (n/d, d), i.e. twice the speed
+  def isPrimeGenerator(n: Int, divisors: Seq[Int]): Boolean =
     divisors.forall(d => primes.get(d + n/d))
-  }
 
-  def cartesianProduct(xs: Seq[Int]) =
+  def cartesianProduct(xs: Seq[Int]): Seq[Int] =
     xs.map(x => List(1, x)).reduceLeft((ys, zs) => for(y <- ys; z <- zs) yield y * z)
-
 }
 
+class Euler_357_brute extends Problem {
+  def solve(): Long = ???
+}

@@ -1,8 +1,7 @@
 import fint.Timer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 public class Primes {
@@ -75,13 +74,48 @@ public class Primes {
         return bs;
     }
 
+    public static boolean[] primesSieveBoolean(int upto) {
+        boolean[] ps = new boolean[upto + 1];
+        int max = (int) Math.sqrt(upto);
+        // initialize odds to true
+        ps[2] = true;
+        for (int i = 3; i < ps.length; i+=2) {
+            ps[i] = true;
+        }
+        // for each prime
+        for (int i = 3; i <= max && i > -1; i = nextOddTrueAfter(ps, i)) {
+            // set multiples of that prime to false
+            for (int j = i * 2; j < ps.length; j += i) {
+                ps[j] = false;
+            }
+        }
+        return ps;
+    }
+
+    private static int nextOddTrueAfter(boolean[] arr, int p) {
+        for (int i = p + 2; i < arr.length; i+=2) {
+            if(arr[i]) return i;
+        }
+        return -1;
+    }
+
 
     // for testing purposes:
     public static void main(String[] args) throws Exception{
+        Object[] X = new Object[2];
         Timer.timed(()-> {
-//            BitSet b = primesFromSieve(100_000_000);
-            System.out.println(primeFactors(53));
+            X[0] = primesFromSieve(100_000_000);
             return 0L;
         });
+//            System.out.println(primeFactors(53));
+        Timer.timed(()-> {
+            X[1] = primesSieveBoolean(100_000_000);
+            return 0L;
+        });
+        BitSet b = (BitSet) X[0];
+        boolean[] ps = (boolean[]) X[1];
+
+        IntStream rs = (new Random()).ints(100, 0, 100_000_001);
+        rs.forEach(r -> System.out.println(r + "BitSet "+b.get(r)+" boolean[] "+ps[r]+ (b.get(r)==ps[r]? " Korrect": " **** WONG ****")));
     }
 }
