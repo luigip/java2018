@@ -19,11 +19,11 @@
   cartesian products
 
       Full version, max_n = 1e8
-      Time: 11114902000 ns  =  11115 ms
+      Time:  =  1859 ms (1052 ms if run twice)
       Euler_357: 1739023853137
 
       Short version, max_n = 1e6
-      Time: 1166315670 ns  =  1166 ms
+      Time:  =  739 ms
       Euler_357: 524402305
   */
 class Euler_357 extends Problem {
@@ -33,33 +33,33 @@ class Euler_357 extends Problem {
 
   def solve: Long = {
     val solutions = for {
-      n <- Iterator.iterate(1)(n => primes.nextSetBit(n + 2) - 1).takeWhile(n => n > -1 && n <= max_n)
+      p <- Iterator.iterate(2)(p => primes.nextSetBit(p + 1)).takeWhile(_ <= max_n / 2)
+      n = 2 * (p - 2)
+      if primes.get(n + 1)
       factors <- primeFactors(n)
-      if isPrimeGenerator(n, cartesianProduct(factors))
+      if isSolution(n, cartesianProduct(factors))
     } yield n.toLong
-    solutions.sum
+    // We left out the solution 1, because it doesn't fit the n / 2 + 2 pattern, so add it:
+    1 + solutions.sum
   }
 
   def primeFactors(remaining: Int, prime: Int = 2, factors: Vector[Int] = Vector.empty): Option[Seq[Int]] = {
     // primes returns -1 if it has run out of primes
     // primes above the sqrt(remaining) can't be factors, but we know the remaining is the last prime
+    def nextPrime = primes.nextSetBit(prime + 1)
     if (prime * prime <= remaining && prime > -1) remaining % prime match {
       case 0 => remaining / prime % prime match {         // prime divides, check if it divides again
         case 0 => None                                    // repeated prime factor, hence invalid
-        case _ => primeFactors(remaining / prime, primes.nextSetBit(prime + 1), factors :+ prime)
+        case _ => primeFactors(remaining / prime, nextPrime, factors :+ prime)
       }
-      case _ => primeFactors(remaining, primes.nextSetBit(prime + 1), factors)  // does not divide, so try next prime
+      case _ => primeFactors(remaining, nextPrime, factors)  // does not divide, so try next prime
     }
     else Some(factors :+ remaining)
   }
 
-  def isPrimeGenerator(n: Int, divisors: Seq[Int]): Boolean =
+  def isSolution(n: Int, divisors: Seq[Int]): Boolean =
     divisors.forall(d => primes.get(d + n/d))
 
   def cartesianProduct(xs: Seq[Int]): Seq[Int] =
     xs.map(x => List(1, x)).reduceLeft((ys, zs) => for(y <- ys; z <- zs) yield y * z)
-}
-
-class Euler_357_brute extends Problem {
-  def solve(): Long = ???
 }
