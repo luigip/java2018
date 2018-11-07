@@ -1,3 +1,5 @@
+package euler
+
 class Euler_017 extends Problem {
   def solve: Long = {
     val letters = for {

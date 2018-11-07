@@ -1,3 +1,5 @@
+package euler;
+
 import java.math.BigInteger;
 
 public class Euler_016 extends Problem {

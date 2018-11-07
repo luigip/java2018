@@ -1,4 +1,4 @@
-import scala.collection.JavaConverters
+package euler
 
 class Euler_012 extends Problem {
   override def solve(): Long = {

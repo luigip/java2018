@@ -1,3 +1,5 @@
+package euler;
+
 public class Euler_014 extends Problem {
 
 //    private static int START = 13;

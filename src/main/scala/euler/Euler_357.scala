@@ -1,3 +1,7 @@
+package euler
+
+import euler.common.Primes
+
 /*
   Strategy:
   Observe the following:

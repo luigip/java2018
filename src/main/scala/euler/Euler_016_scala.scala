@@ -1,4 +1,4 @@
-import java.math.BigInteger
+package euler
 
 class Euler_016_scala extends Problem {
   def solve: Long = {

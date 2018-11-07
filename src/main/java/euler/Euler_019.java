@@ -1,3 +1,5 @@
+package euler;
+
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -6,7 +8,7 @@ import java.time.LocalDate;
 
 public class Euler_019 extends Problem {
     @Override
-    long solve() throws IOException {
+    long solve() {
         final LocalDate start = LocalDate.of(1901,1,1);
         final LocalDate end = LocalDate.of(2000, 12, 31);
         int sundayCount = 0;

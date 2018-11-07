@@ -1,3 +1,5 @@
+package euler
+
 import scala.collection.mutable
 
 /*Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down,

@@ -1,4 +1,7 @@
+package euler
+
 import java.nio.file.{Files, Paths}
+
 import scala.collection.JavaConverters._
 
 class Euler_018_and_067 extends Problem {
