@@ -4,7 +4,10 @@ import java.util
 
 class BitSetIterator(bitset: util.BitSet, from: Int, to: Int) extends Iterator[Int]  {
   private var index = from
-  override def hasNext: Boolean = index <= to && bitset.nextSetBit(index) > -1
+  override def hasNext: Boolean = {
+    val maybeNext = bitset.nextSetBit(index)
+    maybeNext > -1 && maybeNext <= to
+  }
   override def next(): Int = {
     val result = bitset.nextSetBit(index)
     index = result + 1
