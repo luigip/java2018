@@ -1,6 +1,6 @@
 package euler.common;
 
-import fint.Timer;
+import static fint.Timer.*;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -107,12 +107,12 @@ public class Primes {
         Object[] X = new Object[2];
         Timer.timed(()-> {
             X[0] = primesFromSieve(100_000_000);
-            return 0L;
+            return null;
         });
 //            System.out.println(primeFactors(53));
         Timer.timed(()-> {
             X[1] = primesSieveBoolean(100_000_000);
-            return 0L;
+            return null;
         });
         BitSet b = (BitSet) X[0];
         boolean[] ps = (boolean[]) X[1];

@@ -1,6 +1,7 @@
 package euler
 
 import euler.common.Primes
+import euler.common.Utilities.concatenateInts
 
 /*
   Prime pair sets
@@ -24,7 +25,6 @@ class Euler_060 extends Problem {
 //    for {
 //      setSize <- 2 to numberOfPrimesInSet
 //    }
-
     0L
   }
 
@@ -37,18 +37,13 @@ class Euler_060 extends Problem {
   }
 
   def isRemarkable(xs: Set[Int]) =
-    xs.toIndexedSeq.combinations(2).forall(combo => primes.get(concat(combo(0), combo(1))))
+    xs.toIndexedSeq.combinations(2).forall(combo => primes.get(concatenateInts(combo(0), combo(1))))
 
-  def concat(x: Int, y: Int) = {
-    val sb = new StringBuilder
-    sb.append(x)
-    sb.append(y)
-    sb.toString.toInt
-  }
+
 
 }
 object Test_060 extends App {
   val e = new Euler_060
-  val r = e.concat(12,34)
+  val r = concatenateInts(12,34)
   println(r)
 }

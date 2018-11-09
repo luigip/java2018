@@ -15,11 +15,14 @@ import java.util.Arrays;
 
 public class Euler_011 extends Problem {
 
-    long solve() throws IOException {
+    long solve() {
         int runLength = 4;
         int squareSize = 20;
         File file = new File("data/Euler_011_data.txt");
-        String input = Files.asCharSource(file, Charset.defaultCharset()).read();
+        String input = null;
+        try {
+            input = Files.asCharSource(file, Charset.defaultCharset()).read();
+        } catch (IOException e) { throw new RuntimeException(e);}
         String[] inputStrings = input.split("\\r\\n|\\n| ");
         int[] xs = Arrays.stream(inputStrings).mapToInt(Integer::valueOf).toArray();
         int maxProduct = 1;

@@ -2,7 +2,7 @@ package fint;
 import java.io.IOException;
 
 @FunctionalInterface
-public interface Timing {
-    long doTaskToBeTimed() throws IOException;
+public interface Timing<T> {
+    T doTaskToBeTimed() throws IOException;
 }
 

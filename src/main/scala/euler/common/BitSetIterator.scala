@@ -19,6 +19,6 @@ object BitSetIterator {
   def main(args: Array[String]): Unit = {
     val ps = Primes.primesFromSieve(20)
     val it = BitSetIterator(ps, 0, 20)
-    it.foreach(println)
+    println(it.sum)
   }
 }

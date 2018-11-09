@@ -1,8 +1,12 @@
 package euler;
 
-import java.io.IOException;
-
 public abstract class Problem {
 
-    abstract long solve() throws IOException;
+    public static Problem get(String name) {
+        try {
+            return (Problem) Class.forName(name).getConstructor().newInstance();
+        } catch (Exception e) {throw new RuntimeException(e);}
+    }
+
+    abstract long solve();
 }
