@@ -2,9 +2,8 @@ package euler
 
 import java.util
 
-import euler.common.Primes
 import euler.common.Methods.concatenateInts
-import euler.common.BitSetIterator
+import euler.common.{BitSetIterator, Primes}
 
 /*
   Prime pair sets
@@ -21,32 +20,27 @@ import euler.common.BitSetIterator
 // Similarly, get sets of four from sets of three, from sets of two
 
 class Euler_060 extends Problem {
-  private val numberOfPrimesInSet = 3
-  private val maxSearch = 999 // this is enforced if we're checking for primes of Ints from our sieve, as Int.MaxValue
-                               // is 9 digits, and we need to check check for concatenations
-  implicit private val primes: util.BitSet = Primes.primesFromSieve(1e8.toInt) // covering all 8 digit numbers
+  /*private*/ val numberOfPrimesInSet = 5
+  /*private*/ val maxSearch = 9999 // this is enforced if we're checking for primes of Ints from our sieve, as Int.MaxValue
+  // is 9 digits, and we need to check check for concatenations
+  implicit /*private*/ val primes: util.BitSet = Primes.primesFromSieve(1e8.toInt) // covering all 8 digit numbers
 
   def solve: Long = {
-    val cs =
-      getCombos(numberOfPrimesInSet, maxSearch)       foreach println
-//      .map(_.sum).max
-
-//   Time: 3439744307 ns  =  3440 ms
-//   euler.Euler_060: 26033
-
-    0L
+    getCombos(numberOfPrimesInSet, maxSearch).map(_.sum).max
+    //    Time: 4891287217 ns  =  4891 ms
+    //    euler.Euler_060: 26033
   }
 
-  /*private*/ lazy val pairCombos: Iterator[Set[Int]] = for {
-    p <- BitSetIterator from 0 to maxSearch
-    q <- BitSetIterator from (p + 1) to maxSearch
-    if isRemarkablePair(p,q)
-  } yield Set(p,q)
+  def pairCombos(max: Int): Stream[Set[Int]] = (for {
+    p <- BitSetIterator from 0 to max
+    q <- BitSetIterator from (p + 1) to max
+    if isRemarkablePair(p, q)
+  } yield Set(p, q)).toStream
 
-  private lazy val isPairCombo = pairCombos.toSet
+  lazy val isPairCombo: Set[Set[Int]] = pairCombos(maxSearch).toSet
 
-  def getCombos(arity: Int, max: Int): Iterator[Set[Int]] = arity match {
-    case 2 => pairCombos
+  def getCombos(arity: Int, max: Int): Stream[Set[Int]] = arity match {
+    case 2 => pairCombos(max)
     case x => for {
       remarkableSet <- getCombos(x - 1, max)
       p <- BitSetIterator from (remarkableSet.max + 1) to max
@@ -54,15 +48,10 @@ class Euler_060 extends Problem {
     } yield remarkableSet + p
   }
 
-  def isRemarkablePair(x: Int, y: Int) = primes.get(concatenateInts(x,y)) && primes.get(concatenateInts(y,x))
+  def isRemarkablePair(x: Int, y: Int) = primes.get(concatenateInts(x, y)) && primes.get(concatenateInts(y, x))
 
   def isRemarkable(xs: Set[Int], p: Int) = xs.forall(x => isPairCombo(Set(x, p)))
 }
 
-object Test_060 extends App {
-  val e = new Euler_060
-//  val r = e.getCombos(3, 700)
-  println (e.isRemarkable(Set(3,7,109), 673))
-//  println(r)
-  e.pairCombos foreach println
-}
+// lessons from debugging:
+// 1. Beware Iterators! Be careful you're not re-using them. Use Stream instead if possible
