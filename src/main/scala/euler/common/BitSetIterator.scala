@@ -15,10 +15,18 @@ class BitSetIterator(bitset: util.BitSet, from: Int, to: Int) extends Iterator[I
 object BitSetIterator {
   def apply(bitset: util.BitSet, from: Int, to: Int) = new BitSetIterator(bitset: util.BitSet, from: Int, to: Int)
 
+  // completely gratuitous DSL coming up...
+  class BitSetIteratorFrom(val from: Int) {
+    def to(to: Int)(implicit bitset: util.BitSet) = BitSetIterator(bitset, from, to)
+  }
+  def from(start: Int)(implicit bitset: util.BitSet): BitSetIteratorFrom = new BitSetIteratorFrom(start)
+
+
   // testing
   def main(args: Array[String]): Unit = {
-    val ps = Primes.primesFromSieve(20)
-    val it = BitSetIterator(ps, 0, 20)
+    implicit val ps = Primes.primesFromSieve(20)
+    val it = BitSetIterator from 0 to 20
     println(it.sum)
   }
 }
+

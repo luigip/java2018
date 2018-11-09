@@ -1,7 +1,10 @@
 package euler
 
+import java.util
+
 import euler.common.Primes
-import euler.common.Utilities.concatenateInts
+import euler.common.Methods.concatenateInts
+import euler.common.BitSetIterator
 
 /*
   Prime pair sets
@@ -18,32 +21,38 @@ import euler.common.Utilities.concatenateInts
 // Similarly, get sets of four from sets of three, from sets of two
 
 class Euler_060 extends Problem {
-  private val numberOfPrimesInSet = 4
-  private val primes = Primes.primesFromSieve(1e6.toInt)
+  private val numberOfPrimesInSet = 5
+  private val maxSearch = 9999 // this is enforced if we're checking for primes of Ints from our sieve, as Int.MaxValue
+                               // is 9 digits, and we need to check check for concatenations
+  implicit private val primes: util.BitSet = Primes.primesFromSieve(1e8.toInt) // covering all 8 digit numbers
 
   def solve: Long = {
-//    for {
-//      setSize <- 2 to numberOfPrimesInSet
-//    }
-    0L
+    getCombos(numberOfPrimesInSet, maxSearch).map(_.sum).max
+//   Time: 3439744307 ns  =  3440 ms
+//   euler.Euler_060: 26033
   }
 
-  def `pairs where n = 2`(upto: Int): Set[Set[Int]] = {
-//    for {
-//      p1 <- primes.stream.iterator.asScala.takeWhile(_ <= upto)
-//      p2 <- primes.stream.iterator.asScala.dropWhile(_ <= p1).takeWhile(_ <= upto)
-//    } ???
-    ???
+  def getCombos(arity: Int, max: Int): Iterator[Seq[Int]] = arity match {
+    case 2 => for {
+      p <- BitSetIterator from 0 to max
+      q <- BitSetIterator from (p + 1) to max
+      if isRemarkablePair(p,q)
+    } yield Seq(p,q)
+    case x => for {
+      remarkableSeq <- getCombos(x - 1, max)
+      p <- BitSetIterator(primes, remarkableSeq.max + 1 , max)
+      if isRemarkable(remarkableSeq, p)
+    } yield remarkableSeq :+ p
   }
 
-  def isRemarkable(xs: Set[Int]) =
-    xs.toIndexedSeq.combinations(2).forall(combo => primes.get(concatenateInts(combo(0), combo(1))))
+  def isRemarkablePair(x: Int, y: Int) = primes.get(concatenateInts(x,y)) && primes.get(concatenateInts(y,x))
 
-
-
+  def isRemarkable(xs: Seq[Int], p: Int) = xs.forall(x => isRemarkablePair(x, p))
 }
+
 object Test_060 extends App {
   val e = new Euler_060
-  val r = concatenateInts(12,34)
+  val r = e.getCombos(2, 10)
+  assert(e.isRemarkable(Seq(3,7,109), 673))
   println(r)
 }
