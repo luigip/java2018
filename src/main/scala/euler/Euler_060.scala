@@ -21,13 +21,15 @@ import euler.common.BitSetIterator
 // Similarly, get sets of four from sets of three, from sets of two
 
 class Euler_060 extends Problem {
-  private val numberOfPrimesInSet = 5
-  private val maxSearch = 9999 // this is enforced if we're checking for primes of Ints from our sieve, as Int.MaxValue
+  /*private*/ val numberOfPrimesInSet = 5
+  /*private*/ val maxSearch = 9999 // this is enforced if we're checking for primes of Ints from our sieve, as Int.MaxValue
                                // is 9 digits, and we need to check check for concatenations
   implicit private val primes: util.BitSet = Primes.primesFromSieve(1e8.toInt) // covering all 8 digit numbers
 
   def solve: Long = {
-    getCombos(numberOfPrimesInSet, maxSearch).map(_.sum).max
+    getCombos(numberOfPrimesInSet, maxSearch)
+//      .foreach(println); 0L
+      .map(_.sum).max
 //   Time: 3439744307 ns  =  3440 ms
 //   euler.Euler_060: 26033
   }
@@ -52,7 +54,7 @@ class Euler_060 extends Problem {
 
 object Test_060 extends App {
   val e = new Euler_060
-  val r = e.getCombos(2, 10)
+  val r = e.getCombos(5, 9999)
   assert(e.isRemarkable(Seq(3,7,109), 673))
-  println(r)
+  println(r.toList)
 }
